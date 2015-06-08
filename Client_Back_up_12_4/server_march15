@@ -1,0 +1,56 @@
+import socket
+import cv2
+import numpy as np
+import types
+
+#socket initialisation
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversocket.bind(('192.168.0.101', 8093))
+serversocket.listen(5) # become a server socket, maximum 5 connections
+
+#wait for connection from robot 1
+connection1, address1 = serversocket.accept()
+print("Client 1 connected")
+
+#wait for connection from robot 2
+#connection2, address2 = serversocket.accept()
+#print("Client 2 connected")
+
+
+while True:
+    #read the image
+    img = cv2.imread('outimage.jpg',0)
+
+    #check if the image is valid array
+    if(isinstance(img, types.NoneType)== False):
+
+        #processing the image
+        img = cv2.medianBlur(img,5)
+        cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+
+        #detecting circles using hough transform algorithm
+        circles = cv2.HoughCircles(img,cv2.cv.CV_HOUGH_GRADIENT,1,20,
+                            param1=50,param2=30,minRadius=0,maxRadius=100)
+
+   
+        #check if number of circles in an image is not 0
+        if(isinstance(circles, types.NoneType)== False):
+            if(circles.any):
+                circles = np.uint16(np.around(circles))
+                print "Number of Circles detected:"
+                print len(circles[0])
+                if(len(circles[0])>1):
+
+                    #converting int to string for transmitting over socket
+                    buf = str(len(circles[0]))
+
+                    #send number of circles detected to robot
+                    connection1.send(buf.encode('ascii'))
+                    
+                    #connection.close()
+        else:
+            print "No circles detected"
+            buf = str(0)
+            #send number of circles detected to robot
+            connection1.send(buf.encode('ascii'))
+    

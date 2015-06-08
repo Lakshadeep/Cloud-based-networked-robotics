@@ -1,0 +1,19 @@
+#code for receiving and sending data from server
+#tested and verified 13/2/15 10.42
+
+import socket
+import time
+
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversocket.bind(('192.168.0.102', 8082))
+serversocket.listen(5) # become a server socket, maximum 5 connections
+
+while True:
+    connection, address = serversocket.accept()
+    buf = connection.recv(64)
+    if len(buf) > 0:
+        print buf
+        connection.send(buf.encode('ascii'))
+        connection.close()
+        
+       

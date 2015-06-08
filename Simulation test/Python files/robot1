@@ -1,0 +1,128 @@
+#Robot 1 program
+#Simulation program for single bot cloud communication for search application
+
+import time
+import requests
+import pygame
+import pygame.camera
+from pygame.locals import *
+import urllib2, urllib
+import random
+
+
+pygame.init()
+pygame.camera.init()
+# set up a camera object
+size = (640,480)
+screen = pygame.display.set_mode(size,0)
+ip = 'localhost'
+url_capture = 'http://'+ip+'/xampp/FYP/upload_file1.php'
+
+surface = pygame.surface.Surface(size,0,screen)
+
+cam = pygame.camera.Camera(0,size)
+# start the camera
+cam.start()
+
+
+# Function for reading sensors   1
+def read_sensors():
+   ls = random.randint(0,1)
+   rs = random.randint(0,1)
+   left_sensor = str(ls)
+   right_sensor = str(rs)
+   sensor_values = left_sensor + ',' + right_sensor
+   print "Sensor values:" + sensor_values;
+   return sensor_values;
+
+#function to turn right  2
+def turn_right():
+    print "Turn right";
+    return;
+
+#function to turn left  3
+def turn_left():
+    print "Turn left";
+    return;
+
+#function to move straight  4
+def move_straight():
+    print "Move straight";
+    return;
+
+#function to move back  5
+def move_back():
+    print "Move back";
+    return;
+
+#function to stop   6
+def stop():
+    print "Stop";
+    return;
+
+#function to take image
+def capture():
+    #print "Capturing a image"
+    pygame.event.get()
+    # sleep between every frame
+    time.sleep(1)
+    # fetch the camera image
+    pic = cam.get_image(surface)
+    # blank out the screen
+    #screen.fill((0,0,0))
+    # copy the camera image to the screen
+    screen.blit(pic,(0,0))
+    # update the screen to show the latest screen image
+    p=("outimage.jpg")
+    files = {'file': open('outimage.jpg', 'rb')}
+    r = requests.post(url_capture, files=files)
+    
+    pygame.image.save(surface,p)
+    pygame.display.update()
+    return; 
+
+sensor_values = read_sensors();
+sequence_value = 1
+
+path='http://localhost/xampp/FYP/server.php'        #the url to POST 
+
+while 1:
+   
+
+    
+    data=[('sensor_values',sensor_values),('sequence',sequence_value)]    #The first is the var name the second is the value
+    data=urllib.urlencode(data)
+   
+    req=urllib2.Request(path, data)
+    #req.add_header("Content-type", "application/x-www-form-urlencoded")
+    page=urllib2.urlopen(req).read()
+    mylist  = page.split(',')
+    #print mylist
+
+    sequence_value = mylist[1]
+    if mylist[0] == '1':
+        sensor_values = read_sensors();
+        print "Sending sensor values";
+        capture();
+    elif mylist[0] == '2':
+        turn_right();
+        sensor_values = '0,0';
+        
+    elif mylist[0] == '3':    
+        turn_left();
+        sensor_values = '0,0';
+        
+    elif mylist[0] == '4':
+        move_straight();
+        sensor_values = '0,0';
+        
+    elif mylist[0] == '5':
+        move_back();
+        sensor_values = '0,0';
+
+    elif mylist[0] == '6':
+        stop();
+        sensor_values = '0,0';
+        
+
+    print "-------------------------------------"

@@ -1,0 +1,56 @@
+import time
+from Queue import Queue
+import numpy as np
+import cv2
+import requests
+import urllib2, urllib
+
+cap = cv2.VideoCapture(0)
+cap.set(0,320)
+
+ip = 'localhost'
+url_capture = 'http://'+ip+'/xampp/FYP/upload_file1.php'
+
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect(('192.168.0.100', 8074))
+
+def image_capture_upload_process(in_q):
+    while 1:
+        print "Main program running\n"
+        ret, frame = cap.read()
+        cv2.imshow('frame',frame)
+        cv2.imwrite("outimage.jpg",frame)
+
+        files = {'file': open('outimage.jpg', 'rb')}
+        r = requests.post(url_capture, files=files)
+
+        data = in_q.get()
+        print data
+        if data == 2:
+            cap.release()
+            cv2.destroyAllWindows()
+            break
+        #time.sleep(1)
+
+def msg_process(out_q):
+    counter = 50
+    while 1:
+
+        msg = clientsocket.recv(1024)
+
+        if counter == 1:
+            out_q.put(2)
+        else:
+            out_q.put(1)
+        time.sleep(1)
+        
+
+
+from threading import Thread
+
+q = Queue()
+t1 = Thread(target=image_capture_upload_process,args=(q,))
+t1.start()
+
+t2 = Thread(target=msg_process,args=(q,))
+t2.start()

@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1417426608 source:c:\users\lakshadeep\google drive\final year project\simulation test\rectangle_detection\main.cpp
+	"opencv2/highgui/highgui.hpp"
+	"opencv2/imgproc/imgproc.hpp"
+	<iostream>
+	<stdio.h>
+

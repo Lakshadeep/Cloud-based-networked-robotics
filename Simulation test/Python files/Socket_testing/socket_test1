@@ -1,0 +1,11 @@
+#code for sending and receiving data on client
+#tested and verified 13/2/15 10.40
+
+import socket
+
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect(('192.168.0.102', 8074))
+clientsocket.send('hello')
+msg = clientsocket.recv(1024)
+clientsocket.close()
+print(msg.decode('ascii'))

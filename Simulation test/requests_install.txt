@@ -1,0 +1,5 @@
+installing requests on 2.7 
+
+paste the generated folder in pyhton27/Libs/site-packages
+
+Done

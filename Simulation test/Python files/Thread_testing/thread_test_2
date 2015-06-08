@@ -1,0 +1,51 @@
+import threading
+import time
+import Queue
+
+exitFlag = 0
+
+class mainThread (threading.Thread):
+    def __init__(self, threadID, name, out_q):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+    def run(self):
+        while 1:
+            if exitFlag:
+                thread.exit()
+                
+            main_program_fn()
+        
+
+def main_program_fn():
+    print "Main program running"
+   # print "%d" % (exitFlag)
+    time.sleep(1)
+
+lock = threading.Lock()
+ 
+class messageThread (threading.Thread):
+    def __init__(self, threadID, name, in_q):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+
+    def run(self):
+        counter = 5;
+
+        
+        
+        
+        while counter:
+            if counter == 1:
+                print "\nStill didnt get message"
+            print counter
+            time.sleep(1)
+            counter -= 1
+
+q = Queue()                
+program_thread = mainThread(1,"Main-thread",q)
+message_thread = messageThread(1,"Msg-thread",q)
+program_thread.start()
+message_thread.start()

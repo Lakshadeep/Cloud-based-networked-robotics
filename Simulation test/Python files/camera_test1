@@ -1,0 +1,40 @@
+# import the relevant libraries
+import time
+import requests
+import pygame
+import pygame.camera
+from pygame.locals import *
+# this is where one sets how long the script
+# sleeps for, between frames.sleeptime__in_seconds = 0.05
+# initialise the display window
+pygame.init()
+pygame.camera.init()
+# set up a camera object
+size = (640,480)
+screen = pygame.display.set_mode(size,0)
+
+url = 'http://localhost/xampp/FYP/upload_file1.php'
+
+surface = pygame.surface.Surface(size,0,screen)
+
+cam = pygame.camera.Camera(0,size)
+# start the camera
+cam.start()
+
+while 1:
+    pygame.event.get()
+    # sleep between every frame
+    time.sleep(1)
+    # fetch the camera image
+    pic = cam.get_image(surface)
+    # blank out the screen
+    #screen.fill((0,0,0))
+    # copy the camera image to the screen
+    screen.blit(pic,(0,0))
+    # update the screen to show the latest screen image
+    p=("outimage.jpg")
+    files = {'file': open('outimage.jpg', 'rb')}
+    r = requests.post(url, files=files)
+    print r.text
+    pygame.image.save(surface,p)
+    pygame.display.update()
